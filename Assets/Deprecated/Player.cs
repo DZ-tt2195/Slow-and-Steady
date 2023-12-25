@@ -38,7 +38,6 @@ public class Player : MonoBehaviour
     public int bulletsshot = 0;
     public int powerupsused = 0;
 
-    // Start is called before the first frame update
     void Start()
     {
         gen = FindObjectOfType<Generator>().GetComponent<Generator>();

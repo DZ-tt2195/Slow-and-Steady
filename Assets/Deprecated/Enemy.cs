@@ -32,7 +32,7 @@ public class Enemy : MonoBehaviour
     {
         this.gameObject.SetActive(true);
         this.health = 3;
-        this.speed = Random.Range(50f, 100f);
+        this.speed = Random.Range(75f, 125f);
     }
 
     public void Update()

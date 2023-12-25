@@ -11,7 +11,7 @@ public class Ghost : Enemy
     {
         this.gameObject.SetActive(true);
         this.health = 5;
-        this.speed = Random.Range(100f, 200f);
+        this.speed = Random.Range(125f, 225f);
     }
 
     public void Update()

@@ -8,6 +8,6 @@ public class Imp : Enemy
     {
         this.gameObject.SetActive(true);
         this.health = 1;
-        this.speed = Random.Range(200f, 250f);
+        this.speed = Random.Range(225f, 275f);
     }
 }

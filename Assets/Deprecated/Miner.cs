@@ -8,7 +8,7 @@ public class Miner : Enemy
     {
         this.gameObject.SetActive(true);
         this.health = 4;
-        this.speed = Random.Range(100f, 150f);
+        this.speed = Random.Range(125f, 175f);
     }
 
     public override IEnumerator OnDamageEffect()
