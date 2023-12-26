@@ -8,13 +8,13 @@ public class MobileInput : MonoBehaviour
 {
     public static MobileInput instance;
 
-    public delegate void StartTouchEvent(Vector2 position);
+    public delegate void StartTouchEvent(Finger finger);
     public event StartTouchEvent OnStartTouch;
 
-    public delegate void EndTouchEvent(Vector2 position);
+    public delegate void EndTouchEvent(Finger finger);
     public event EndTouchEvent OnEndTouch;
 
-    public delegate void TouchMovedEvent(Vector2 position);
+    public delegate void TouchMovedEvent(Finger finger);
     public event TouchMovedEvent OnTouchMoved;
 
     private void Awake()
@@ -49,16 +49,16 @@ public class MobileInput : MonoBehaviour
 
     private void FingerDown(Finger finger)
     {
-        OnStartTouch?.Invoke(finger.screenPosition);
+        OnStartTouch?.Invoke(finger);
     }
 
     private void FingerUp(Finger finger)
     {
-        OnEndTouch?.Invoke(finger.screenPosition);
+        OnEndTouch?.Invoke(finger);
     }
 
     private void FingerMoved(Finger finger)
     {
-        OnTouchMoved?.Invoke(finger.screenPosition);
+        OnTouchMoved?.Invoke(finger);
     }
 }

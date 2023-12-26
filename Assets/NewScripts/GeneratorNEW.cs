@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using System;
 using TMPro;
 using System.Diagnostics;
+using UnityEngine.InputSystem;
 
 [System.Serializable]
 public class WaveNEW
@@ -100,7 +101,7 @@ public class GeneratorNEW : MonoBehaviour
             return "0%";
         else
         {
-            float answer = (float)(PlayerNEW.instance.remainingBullets - missedBullets) / PlayerNEW.instance.remainingBullets;
+            float answer = (float)(PlayerNEW.instance.remainingBullets - missedBullets) / (PlayerNEW.instance.remainingBullets-missedBullets);
             return (answer * 100f).ToString("F1") + "%";
         }
     }
@@ -108,6 +109,7 @@ public class GeneratorNEW : MonoBehaviour
     internal void GameOver(string text)
     {
         gameOn = false;
+        PlayerNEW.instance.joystick.transform.parent.gameObject.SetActive(false);
         PlayerNEW.instance.gameObject.SetActive(false);
         endText.text = text;
         endText.transform.parent.gameObject.SetActive(true);

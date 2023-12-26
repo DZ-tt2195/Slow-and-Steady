@@ -15,8 +15,9 @@ public class PlayerNEW : MonoBehaviour
 
     [Foldout("Misc", true)]
         [SerializeField] BulletNEW bulletPrefab;
+        Transform reticle;
         Transform bulletTracker;
-        Camera mainCam;
+        internal Camera mainCam;
         [ReadOnly] public int energy;
 
     [Foldout("UI", true)]
@@ -29,7 +30,11 @@ public class PlayerNEW : MonoBehaviour
         [SerializeField] TMP_Text bulletText;
 
     [Foldout("Audio", true)]
-        [SerializeField] AudioClip shoot;    
+        [SerializeField] AudioClip shoot;
+
+    [Foldout("Mobile Controls", true)]
+        public Joystick joystick;
+        [SerializeField] Button shootButton;
 
     #endregion
 
@@ -38,6 +43,7 @@ public class PlayerNEW : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        reticle = this.transform.GetChild(0);
         mainCam = Camera.main;
         bulletTracker = GameObject.Find("Bullet Tracker").transform;
     }
@@ -49,7 +55,7 @@ public class PlayerNEW : MonoBehaviour
 
         if (Application.isMobilePlatform)
         {
-            MobileInput.instance.OnStartTouch += CreateBullet;
+            //MobileInput.instance.OnStartTouch += CreateBullet;
             Debug.Log("playing on phone");
         }
         else
@@ -62,7 +68,7 @@ public class PlayerNEW : MonoBehaviour
     {
         if (Application.isMobilePlatform)
         {
-            MobileInput.instance.OnStartTouch -= CreateBullet;
+            //MobileInput.instance.OnStartTouch -= CreateBullet;
         }
     }
 
@@ -70,6 +76,15 @@ public class PlayerNEW : MonoBehaviour
     {
         energy = 15;
         StartCoroutine(FreeEnergy());
+
+        if (Application.isMobilePlatform)
+        {
+            shootButton.onClick.AddListener(CreateBullet);
+        }
+        else
+        {
+            joystick.transform.parent.gameObject.SetActive(false);
+        }
     }
 
     #endregion
@@ -93,17 +108,23 @@ public class PlayerNEW : MonoBehaviour
         energyBar.value = energy;
         energyText.text = $"Energy: {energy}";
 
-        if (!Application.isMobilePlatform)
+        if (Application.isMobilePlatform)
+        {
+            if (joystick.angle != float.NaN)
+                this.transform.localEulerAngles = new Vector3(0, 0, joystick.angle);
+        }
+        else
         {
             Vector2 screenPosition = GetWorldCoordinates(Input.mousePosition);
             float rotZ = Mathf.Atan2(screenPosition.y, screenPosition.x) * Mathf.Rad2Deg;
             transform.localEulerAngles = new Vector3(0, 0, rotZ);
 
             if (Input.GetMouseButtonDown(0))
-                CreateBullet(Input.mousePosition);
+                CreateBullet();
         }
     }
 
+    
     Vector2 GetWorldCoordinates(Vector2 screenPos)
     {
         Vector2 screenCoord = new(screenPos.x, screenPos.y);
@@ -111,10 +132,8 @@ public class PlayerNEW : MonoBehaviour
         return worldCoord;
     }
 
-    void CreateBullet(Vector2 screenPosition)
+    void CreateBullet()
     {
-        screenPosition = GetWorldCoordinates(screenPosition);
-
         if (GeneratorNEW.instance.gameOn && remainingBullets > 0 && energy > 0)
         {
             if (!EventSystem.current.IsPointerOverGameObject())
@@ -123,7 +142,7 @@ public class PlayerNEW : MonoBehaviour
 
                 BulletNEW newBullet = Instantiate(bulletPrefab, bulletTracker);
                 newBullet.transform.localPosition = new Vector2(0, 0);
-                newBullet.targetPosition = screenPosition.normalized * 10000f;
+                newBullet.targetPosition = reticle.position.normalized * 10000f;
 
                 remainingBullets--;
                 bulletBar.value = remainingBullets;
