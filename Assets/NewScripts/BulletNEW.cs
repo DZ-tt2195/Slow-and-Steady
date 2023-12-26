@@ -7,6 +7,7 @@ public class BulletNEW : MonoBehaviour
     [SerializeField] float bulletSpeed;
     internal Vector2 targetPosition;
     Rigidbody2D rb;
+    public bool active = true;
 
     private void Awake()
     {
@@ -23,7 +24,6 @@ public class BulletNEW : MonoBehaviour
         if (collision.CompareTag("Barrier"))
         {
             GeneratorNEW.instance.missedBullets++;
-            Debug.Log(collision.name);
             Destroy(this.gameObject);
         }
     }

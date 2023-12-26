@@ -4,6 +4,7 @@ using UnityEngine;
 using MyBox;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class PlayerNEW : MonoBehaviour
 {
@@ -11,21 +12,26 @@ public class PlayerNEW : MonoBehaviour
 #region Variables
 
     public static PlayerNEW instance;
-    Camera mainCam;
 
-    [SerializeField] BulletNEW bulletPrefab;
-    Transform bulletTracker;
+    [Foldout("Misc", true)]
+        [SerializeField] BulletNEW bulletPrefab;
+        Transform bulletTracker;
+        Camera mainCam;
+        [ReadOnly] public int energy;
 
-    [ReadOnly] public int energy;
-    [SerializeField] Slider energyBar;
-    [SerializeField] TMP_Text energyText;
-    WaitForSeconds rechargeEnergy = new(1f);
+    [Foldout("UI", true)]
+        [SerializeField] Slider energyBar;
+        [SerializeField] TMP_Text energyText;
+        WaitForSeconds rechargeEnergy = new(1f);
 
-    int remainingBullets = 100;
-    [SerializeField] Slider bulletBar;
-    [SerializeField] TMP_Text bulletText;
+        internal int remainingBullets = 100;
+        [SerializeField] Slider bulletBar;
+        [SerializeField] TMP_Text bulletText;
 
-#endregion
+    [Foldout("Audio", true)]
+        [SerializeField] AudioClip shoot;    
+
+    #endregion
 
 #region Setup
 
@@ -75,8 +81,6 @@ public class PlayerNEW : MonoBehaviour
         energy++;
         if (energy >= 50)
             energy = 50;
-        energyBar.value = energy;
-        energyText.text = $"Energy: {energy}";
 
         yield return rechargeEnergy;
 
@@ -86,6 +90,9 @@ public class PlayerNEW : MonoBehaviour
 
     private void Update()
     {
+        energyBar.value = energy;
+        energyText.text = $"Energy: {energy}";
+
         if (!Application.isMobilePlatform)
         {
             Vector2 screenPosition = GetWorldCoordinates(Input.mousePosition);
@@ -110,17 +117,22 @@ public class PlayerNEW : MonoBehaviour
 
         if (GeneratorNEW.instance.gameOn && remainingBullets > 0 && energy > 0)
         {
-            BulletNEW newBullet = Instantiate(bulletPrefab, bulletTracker);
-            newBullet.transform.localPosition = new Vector2(0, 0);
-            newBullet.targetPosition = screenPosition.normalized * 10000f;
+            if (!EventSystem.current.IsPointerOverGameObject())
+            {
+                AudioManager.instance.PlaySound(shoot, 0.5f);
 
-            remainingBullets--;
-            bulletBar.value = remainingBullets;
-            bulletText.text = $"Bullets: {remainingBullets}";
+                BulletNEW newBullet = Instantiate(bulletPrefab, bulletTracker);
+                newBullet.transform.localPosition = new Vector2(0, 0);
+                newBullet.targetPosition = screenPosition.normalized * 10000f;
 
-            energy--;
-            energyBar.value = energy;
-            energyText.text = $"Energy: {energy}";
+                remainingBullets--;
+                bulletBar.value = remainingBullets;
+                bulletText.text = $"Bullets: {remainingBullets}";
+
+                energy--;
+                energyBar.value = energy;
+                energyText.text = $"Energy: {energy}";
+            }
         }
     }
 

@@ -5,6 +5,7 @@ using MyBox;
 using UnityEngine.UI;
 using System;
 using TMPro;
+using System.Diagnostics;
 
 [System.Serializable]
 public class WaveNEW
@@ -18,11 +19,17 @@ public class GeneratorNEW : MonoBehaviour
     [ReadOnly] public bool gameOn = true;
 
     Transform enemyTracker;
-    [ReadOnly] public int missedBullets = 0;
 
     [SerializeField] List<WaveNEW> listOfWaves = new();
     [SerializeField] Slider waveBar;
     [SerializeField] TMP_Text waveText;
+
+    [SerializeField] TMP_Text endText;
+    [SerializeField] TMP_Text statsText;
+
+    [ReadOnly] public int missedBullets = 0;
+    [ReadOnly] public int abilitiesUsed = 0;
+    Stopwatch stopwatch;
 
     private void Awake()
     {
@@ -32,6 +39,8 @@ public class GeneratorNEW : MonoBehaviour
 
     private void Start()
     {
+        stopwatch = new Stopwatch();
+        stopwatch.Start();
         waveBar.maxValue = listOfWaves.Count;
         StartCoroutine(Gameplay(0));
     }
@@ -48,9 +57,9 @@ public class GeneratorNEW : MonoBehaviour
             waveBar.value = waveNumber + 1;
             waveText.text = $"Wave: {waveNumber + 1}/{listOfWaves.Count}";
         }
-        catch (IndexOutOfRangeException)
+        catch (ArgumentOutOfRangeException)
         {
-            yield break;
+            StartCoroutine(WaitForEnding());
         }
 
         float time = 15f;
@@ -58,23 +67,54 @@ public class GeneratorNEW : MonoBehaviour
         {
             time -= Time.deltaTime;
             if (!gameOn)
-            {
-                Debug.Log("game on disabled");
                 yield break;
-            }
             if (enemyTracker.childCount == 0)
-            {
-                Debug.Log("wave triggered faster");
                 break;
-            }
             yield return null;
         }
 
         StartCoroutine(Gameplay(waveNumber + 1));
     }
 
-    internal void GameOver()
+    IEnumerator WaitForEnding()
     {
-        Debug.Log("you lost");
+        while (enemyTracker.childCount > 0)
+        {
+            yield return null;
+        }
+
+        GameOver("You Won!");
+    }
+
+    string CalculateTime()
+    {
+        stopwatch.Stop();
+        TimeSpan x = stopwatch.Elapsed;
+        string part = x.Seconds < 10 ? $"0{x.Seconds}" : $"{x.Seconds}";
+        return $"{x.Minutes}:" + part + $".{x.Milliseconds}";
+    }
+
+    string CalculatePercentage()
+    {
+        if (PlayerNEW.instance.remainingBullets == 100)
+            return "0%";
+        else
+        {
+            float answer = (float)(PlayerNEW.instance.remainingBullets - missedBullets) / PlayerNEW.instance.remainingBullets;
+            return (answer * 100f).ToString("F1") + "%";
+        }
+    }
+
+    internal void GameOver(string text)
+    {
+        gameOn = false;
+        PlayerNEW.instance.gameObject.SetActive(false);
+        endText.text = text;
+        endText.transform.parent.gameObject.SetActive(true);
+
+        statsText.text =
+            $"Bullet Accuracy: {CalculatePercentage()}" +
+            $"\nAbilities Used: {abilitiesUsed}" +
+            $"\nTime Taken: {CalculateTime()}";
     }
 }

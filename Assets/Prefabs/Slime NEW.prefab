@@ -81,7 +81,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 40.992638, y: 25.12}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -102,6 +102,8 @@ MonoBehaviour:
   health: 3
   slowest: 0.5
   fastest: 1
+  damage: {fileID: 8300000, guid: 26cb3e6ee2f8047abb7234b5948f9379, type: 3}
+  die: {fileID: 8300000, guid: 4f2fd682d668c4ae980e60034d06e352, type: 3}
 --- !u!50 &1499953323504070301
 Rigidbody2D:
   serializedVersion: 4
@@ -165,8 +167,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.3076923, y: 2.3076923}
-    newSize: {x: 1, y: 1}
+    oldSize: {x: 1.6397055, y: 1.0048}
+    newSize: {x: 40.992638, y: 25.12}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0

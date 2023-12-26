@@ -81,7 +81,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 23.429998, y: 25.825964}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -150,8 +150,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.8461537, y: 1.8461537}
-    newSize: {x: 1, y: 1}
+    oldSize: {x: 0.58575, y: 0.6456491}
+    newSize: {x: 23.429998, y: 25.825964}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -174,3 +174,5 @@ MonoBehaviour:
   health: 1
   slowest: 2
   fastest: 3
+  damage: {fileID: 8300000, guid: 26cb3e6ee2f8047abb7234b5948f9379, type: 3}
+  die: {fileID: 8300000, guid: 26cb3e6ee2f8047abb7234b5948f9379, type: 3}

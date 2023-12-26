@@ -11,9 +11,13 @@ public class EnemyNEW : MonoBehaviour
     [SerializeField] float fastest;
     float actualSpeed;
 
+    [SerializeField] AudioClip damage;
+    [SerializeField] AudioClip die;
+
     bool frozen = false;
     bool takingDamage = false;
     protected static WaitForSeconds damageWait;
+    protected static WaitForSeconds freezeWait;
 
     protected SpriteRenderer sprite;
     protected float defaultAlpha = 1;
@@ -24,6 +28,7 @@ public class EnemyNEW : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
         startingColor = sprite.color;
         damageWait ??= new WaitForSeconds(0.8f);
+        freezeWait ??= new WaitForSeconds(5f);
         actualSpeed = Random.Range(slowest, fastest);
     }
 
@@ -48,20 +53,26 @@ public class EnemyNEW : MonoBehaviour
 
     void FixedUpdate()
     {
-        transform.Translate((Vector2.left * Time.deltaTime) * actualSpeed);
+        if (!frozen)
+            transform.Translate((Vector2.left * Time.deltaTime) * actualSpeed);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Bullet"))
         {
-            Destroy(collision.gameObject);
-            StartCoroutine(TakeDamage());
+            BulletNEW bullet = collision.GetComponent<BulletNEW>();
+            if (bullet.active)
+            {
+                bullet.active = false;
+                Destroy(collision.gameObject);
+                StartCoroutine(TakeDamage());
+            }
         }
 
         if (collision.gameObject == GeneratorNEW.instance.gameObject)
         {
-            GeneratorNEW.instance.GameOver();
+            GeneratorNEW.instance.GameOver("You Lost.");
         }
 
         GhostBarrierTrigger(collision);
@@ -71,16 +82,18 @@ public class EnemyNEW : MonoBehaviour
     {
     }
 
-    IEnumerator TakeDamage()
+    internal IEnumerator TakeDamage()
     {
         health--;
         if (health == 0)
         {
+            AudioManager.instance.PlaySound(die, 0.3f);
             yield return DeathEffect();
             Destroy(this.gameObject);
         }
         else
         {
+            AudioManager.instance.PlaySound(damage, 0.3f);
             takingDamage = true;
             yield return DamageEffect();
             takingDamage = false;
@@ -95,5 +108,12 @@ public class EnemyNEW : MonoBehaviour
     protected virtual IEnumerator DeathEffect()
     {
         yield return null;
+    }
+
+    internal IEnumerator Freeze()
+    {
+        frozen = true;
+        yield return freezeWait;
+        frozen = false;
     }
 }
